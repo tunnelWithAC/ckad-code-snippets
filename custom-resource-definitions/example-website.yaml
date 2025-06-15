@@ -1,0 +1,10 @@
+apiVersion: example.com/v1
+kind: Website
+metadata:
+  name: example-website
+  namespace: default
+spec:
+  domain: example.com
+  replicas: 3
+  image: nginx:latest
+  port: 80 
