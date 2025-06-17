@@ -10,6 +10,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -54,7 +55,7 @@ func main() {
 	}
 
 	// Create clients
-	clientset, err := kubernetes.NewForConfig(config)
+	_, err = kubernetes.NewForConfig(config)
 	if err != nil {
 		log.Fatalf("Error creating kubernetes client: %v", err)
 	}
@@ -90,18 +91,18 @@ func main() {
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			website := obj.(*Website)
-			log.Printf("Website added: %s/%s", website.Namespace, website.Name)
+			log.Printf("Website added: %s/%s", website.ObjectMeta.Namespace, website.ObjectMeta.Name)
 			// Implement your reconciliation logic here
 		},
 		UpdateFunc: func(old, new interface{}) {
-			oldWebsite := old.(*Website)
+			_ = old.(*Website) // Ignore old website
 			newWebsite := new.(*Website)
-			log.Printf("Website updated: %s/%s", newWebsite.Namespace, newWebsite.Name)
+			log.Printf("Website updated: %s/%s", newWebsite.ObjectMeta.Namespace, newWebsite.ObjectMeta.Name)
 			// Implement your reconciliation logic here
 		},
 		DeleteFunc: func(obj interface{}) {
 			website := obj.(*Website)
-			log.Printf("Website deleted: %s/%s", website.Namespace, website.Name)
+			log.Printf("Website deleted: %s/%s", website.ObjectMeta.Namespace, website.ObjectMeta.Name)
 			// Implement your cleanup logic here
 		},
 	})
