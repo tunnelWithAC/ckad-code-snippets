@@ -27,6 +27,25 @@ type Website struct {
 	Status WebsiteStatus `json:"status,omitempty"`
 }
 
+// DeepCopyObject implements the runtime.Object interface
+func (w *Website) DeepCopyObject() runtime.Object {
+	if w == nil {
+		return nil
+	}
+	out := new(Website)
+	w.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyInto copies the receiver into the given Website
+func (w *Website) DeepCopyInto(out *Website) {
+	*out = *w
+	out.TypeMeta = w.TypeMeta
+	out.ObjectMeta = w.ObjectMeta
+	out.Spec = w.Spec
+	out.Status = w.Status
+}
+
 type WebsiteSpec struct {
 	Domain   string `json:"domain"`
 	Replicas int32  `json:"replicas"`
